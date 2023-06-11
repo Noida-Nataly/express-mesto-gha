@@ -23,10 +23,13 @@ module.exports.getCards = (req, res) => {
 
 module.exports.deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
+    .orFail(new Error('InvalidId'))
     .then(() => res.send({ message: 'Место удалено' }))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'InvalidId') {
         res.status(404).send({ message: `Карточка с указанным id:${req.params.userId} не найдена` });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректный идентификатор карты' });
       } else {
         res.status(500).send({ message: 'Неизвестная ошибка' });
       }
@@ -42,12 +45,13 @@ module.exports.likeCardById = (req, res) => {
     { $addToSet: { likes: _id } },
     { new: true },
   )
+    .orFail(new Error('InvalidId'))
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'InvalidId') {
         res.status(404).send({ message: `Передан несуществующий id:${req.params.userId} карточки` });
-      } else if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятия лайка.' });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректный идентификатор карты' });
       } else {
         res.status(500).send({ message: 'Неизвестная ошибка' });
       }
@@ -63,12 +67,13 @@ module.exports.dislikeCardById = (req, res) => {
     { $pull: { likes: _id } },
     { new: true },
   )
+    .orFail(new Error('InvalidId'))
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'InvalidId') {
         res.status(404).send({ message: `Передан несуществующий id:${req.params.userId} карточки` });
-      } else if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятия лайка.' });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректный идентификатор карты' });
       } else {
         res.status(500).send({ message: 'Неизвестная ошибка' });
       }
