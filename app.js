@@ -20,5 +20,8 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 app.use('/cards', cardRouter);
 app.use('/users', userRouter);
+app.use('/*', (req, res) => {
+  res.status(400).send('Страница не найдена');
+});
 
 app.listen(PORT);
