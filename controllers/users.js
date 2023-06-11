@@ -25,7 +25,7 @@ module.exports.getUserById = (req, res) => {
     .orFail(new Error('InvalidId'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'InvalidId') {
+      if (err.message === 'InvalidId') {
         res.status(404).send({ message: `Пользователь по указанному id:${req.params.userId} не найден` });
       } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Некорректный идентификатор пользователя' });

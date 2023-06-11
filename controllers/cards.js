@@ -26,7 +26,7 @@ module.exports.deleteCardById = (req, res) => {
     .orFail(new Error('InvalidId'))
     .then(() => res.send({ message: 'Место удалено' }))
     .catch((err) => {
-      if (err.name === 'InvalidId') {
+      if (err.message === 'InvalidId') {
         res.status(404).send({ message: `Карточка с указанным id:${req.params.userId} не найдена` });
       } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Некорректный идентификатор карты' });
@@ -48,7 +48,7 @@ module.exports.likeCardById = (req, res) => {
     .orFail(new Error('InvalidId'))
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'InvalidId') {
+      if (err.message === 'InvalidId') {
         res.status(404).send({ message: `Передан несуществующий id:${req.params.userId} карточки` });
       } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Некорректный идентификатор карты' });
@@ -70,7 +70,7 @@ module.exports.dislikeCardById = (req, res) => {
     .orFail(new Error('InvalidId'))
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'InvalidId') {
+      if (err.message === 'InvalidId') {
         res.status(404).send({ message: `Передан несуществующий id:${req.params.userId} карточки` });
       } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Некорректный идентификатор карты' });
