@@ -1,4 +1,9 @@
 const Card = require('../models/card');
+const {
+  ERROR_INVALID_DATA,
+  ERROR_NOT_FOUND,
+  ERROR_SERVER,
+} = require('../errors/errors');
 
 module.exports.createCard = (req, res) => {
   const { _id } = req.user;
@@ -8,9 +13,9 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
+        res.status(ERROR_INVALID_DATA).send({ message: 'Переданы некорректные данные при создании карточки.' });
       } else {
-        res.status(500).send({ message: 'Неизвестная ошибка' });
+        res.status(ERROR_SERVER).send({ message: 'Неизвестная ошибка' });
       }
     });
 };
@@ -18,7 +23,7 @@ module.exports.createCard = (req, res) => {
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => res.status(500).send({ message: 'Неизвестная ошибка' }));
+    .catch(() => res.status(ERROR_SERVER).send({ message: 'Неизвестная ошибка' }));
 };
 
 module.exports.deleteCardById = (req, res) => {
@@ -27,11 +32,11 @@ module.exports.deleteCardById = (req, res) => {
     .then(() => res.send({ message: 'Место удалено' }))
     .catch((err) => {
       if (err.message === 'InvalidId') {
-        res.status(404).send({ message: `Карточка с указанным id:${req.params.userId} не найдена` });
+        res.status(ERROR_NOT_FOUND).send({ message: `Карточка с указанным id:${req.params.id} не найдена` });
       } else if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некорректный идентификатор карты' });
+        res.status(ERROR_INVALID_DATA).send({ message: 'Некорректный идентификатор карты' });
       } else {
-        res.status(500).send({ message: 'Неизвестная ошибка' });
+        res.status(ERROR_SERVER).send({ message: 'Неизвестная ошибка' });
       }
     });
 };
@@ -49,11 +54,11 @@ module.exports.likeCardById = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.message === 'InvalidId') {
-        res.status(404).send({ message: `Передан несуществующий id:${req.params.userId} карточки` });
+        res.status(ERROR_NOT_FOUND).send({ message: `Передан несуществующий id:${cardId} карточки` });
       } else if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некорректный идентификатор карты' });
+        res.status(ERROR_INVALID_DATA).send({ message: 'Некорректный идентификатор карты' });
       } else {
-        res.status(500).send({ message: 'Неизвестная ошибка' });
+        res.status(ERROR_SERVER).send({ message: 'Неизвестная ошибка' });
       }
     });
 };
@@ -71,11 +76,11 @@ module.exports.dislikeCardById = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.message === 'InvalidId') {
-        res.status(404).send({ message: `Передан несуществующий id:${req.params.userId} карточки` });
+        res.status(ERROR_NOT_FOUND).send({ message: `Передан несуществующий id:${cardId} карточки` });
       } else if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некорректный идентификатор карты' });
+        res.status(ERROR_INVALID_DATA).send({ message: 'Некорректный идентификатор карты' });
       } else {
-        res.status(500).send({ message: 'Неизвестная ошибка' });
+        res.status(ERROR_SERVER).send({ message: 'Неизвестная ошибка' });
       }
     });
 };
