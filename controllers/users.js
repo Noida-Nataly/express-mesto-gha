@@ -29,7 +29,7 @@ module.exports.login = (req, res, next) => {
             '4PgzIvqPt4i08qhHTg8MZCWruulpojs6',
             { expiresIn: '7d' },
           );
-          res.cookie('token', token, {
+          return res.cookie('token', token, {
             maxAge: 3600000 * 24 * 7,
             httpOnly: true,
           })
