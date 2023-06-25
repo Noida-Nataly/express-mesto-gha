@@ -1,11 +1,10 @@
 const Card = require('../models/card');
-const {
-  ERROR_INVALID_DATA,
-  ERROR_NOT_FOUND,
-  ERROR_SERVER,
-} = require('../errors/errors');
+const UnknownError = require('../errors/unknown-err');
+const InvalidDataError = require('../errors/invalid-data-err');
+const NotFoundError = require('../errors/not-found-err');
+const AccessDeniedError = require('../errors/access-denied-err');
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { _id } = req.user;
   const { name, link } = req.body;
 
@@ -13,35 +12,44 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_INVALID_DATA).send({ message: 'Переданы некорректные данные при создании карточки.' });
+        next(new InvalidDataError('Переданы некорректные данные при создании карточки.'));
       } else {
-        res.status(ERROR_SERVER).send({ message: 'Неизвестная ошибка' });
+        next(new UnknownError('Неизвестная ошибка'));
       }
     });
 };
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => res.status(ERROR_SERVER).send({ message: 'Неизвестная ошибка' }));
+    .catch(() => next(new UnknownError('Неизвестная ошибка')));
 };
 
-module.exports.deleteCardById = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+module.exports.deleteCardById = (req, res, next) => {
+  Card.findById(req.params.id)
     .orFail(new Error('InvalidId'))
-    .then(() => res.send({ message: 'Место удалено' }))
+    .then((card) => {
+      if (card.owner.toString() !== req.user._id) {
+        return Promise.reject(new Error('Извините, но Вы не можете удалить чужое место'));
+      }
+      return Card.deleteOne(card)
+        .then(() => res.send({ message: 'Место удалёно' }));
+    })
+
     .catch((err) => {
-      if (err.message === 'InvalidId') {
-        res.status(ERROR_NOT_FOUND).send({ message: `Карточка с указанным id:${req.params.id} не найдена` });
+      if (err.message === 'Извините, но Вы не можете удалить чужое место') {
+        next(new AccessDeniedError('Извините, но Вы не можете удалить чужое место'));
+      } else if (err.message === 'InvalidId') {
+        next(new NotFoundError(`Карточка с указанным id:${req.params.id} не найдена`));
       } else if (err.name === 'CastError') {
-        res.status(ERROR_INVALID_DATA).send({ message: 'Некорректный идентификатор карты' });
+        next(new InvalidDataError('Некорректный идентификатор карты'));
       } else {
-        res.status(ERROR_SERVER).send({ message: 'Неизвестная ошибка' });
+        next(new UnknownError('Неизвестная ошибка'));
       }
     });
 };
 
-module.exports.likeCardById = (req, res) => {
+module.exports.likeCardById = (req, res, next) => {
   const { _id } = req.user;
   const { cardId } = req.params;
 
@@ -54,16 +62,16 @@ module.exports.likeCardById = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.message === 'InvalidId') {
-        res.status(ERROR_NOT_FOUND).send({ message: `Передан несуществующий id:${cardId} карточки` });
+        next(new NotFoundError(`Передан несуществующий id:${cardId} карточки`));
       } else if (err.name === 'CastError') {
-        res.status(ERROR_INVALID_DATA).send({ message: 'Некорректный идентификатор карты' });
+        next(new InvalidDataError('Некорректный идентификатор карты'));
       } else {
-        res.status(ERROR_SERVER).send({ message: 'Неизвестная ошибка' });
+        next(new UnknownError('Неизвестная ошибка'));
       }
     });
 };
 
-module.exports.dislikeCardById = (req, res) => {
+module.exports.dislikeCardById = (req, res, next) => {
   const { _id } = req.user;
   const { cardId } = req.params;
 
@@ -76,11 +84,11 @@ module.exports.dislikeCardById = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.message === 'InvalidId') {
-        res.status(ERROR_NOT_FOUND).send({ message: `Передан несуществующий id:${cardId} карточки` });
+        next(new NotFoundError(`Передан несуществующий id:${cardId} карточки`));
       } else if (err.name === 'CastError') {
-        res.status(ERROR_INVALID_DATA).send({ message: 'Некорректный идентификатор карты' });
+        next(new InvalidDataError('Некорректный идентификатор карты'));
       } else {
-        res.status(ERROR_SERVER).send({ message: 'Неизвестная ошибка' });
+        next(new UnknownError('Неизвестная ошибка'));
       }
     });
 };
