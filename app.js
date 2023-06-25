@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi } = require('celebrate');
+const { errors } = require('celebrate');
 
 const cardRouter = require('./routes/cards');
 const userRouter = require('./routes/users');
@@ -51,6 +52,7 @@ app.use('/*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
 
+app.use(errors());
 app.use(errorsMiddleware);
 
 app.listen(PORT);
