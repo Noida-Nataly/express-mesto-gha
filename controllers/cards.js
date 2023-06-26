@@ -14,7 +14,7 @@ module.exports.createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new InvalidDataError('Переданы некорректные данные при создании карточки.'));
       } else {
-        next(new UnknownError('Неизвестная ошибка'));
+        next(new UnknownError());
       }
     });
 };
@@ -22,7 +22,7 @@ module.exports.createCard = (req, res, next) => {
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => next(new UnknownError('Неизвестная ошибка')));
+    .catch(() => next(new UnknownError()));
 };
 
 module.exports.deleteCardById = (req, res, next) => {
@@ -44,7 +44,7 @@ module.exports.deleteCardById = (req, res, next) => {
       } else if (err.name === 'CastError') {
         next(new InvalidDataError('Некорректный идентификатор карты'));
       } else {
-        next(new UnknownError('Неизвестная ошибка'));
+        next(new UnknownError());
       }
     });
 };
@@ -66,7 +66,7 @@ module.exports.likeCardById = (req, res, next) => {
       } else if (err.name === 'CastError') {
         next(new InvalidDataError('Некорректный идентификатор карты'));
       } else {
-        next(new UnknownError('Неизвестная ошибка'));
+        next(new UnknownError());
       }
     });
 };
@@ -88,7 +88,7 @@ module.exports.dislikeCardById = (req, res, next) => {
       } else if (err.name === 'CastError') {
         next(new InvalidDataError('Некорректный идентификатор карты'));
       } else {
-        next(new UnknownError('Неизвестная ошибка'));
+        next(new UnknownError());
       }
     });
 };

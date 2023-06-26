@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const { JWT_SECRET } = require('../utils/constants');
 const User = require('../models/user');
 const NotAuthorizedError = require('../errors/not-authorized-err');
 const UnknownError = require('../errors/unknown-err');
@@ -26,7 +27,7 @@ module.exports.login = (req, res, next) => {
           }
           const token = jwt.sign(
             { _id: user._id },
-            '4PgzIvqPt4i08qhHTg8MZCWruulpojs6',
+            JWT_SECRET,
             { expiresIn: '7d' },
           );
           res.cookie('token', token, {
@@ -40,7 +41,7 @@ module.exports.login = (req, res, next) => {
       if (err.message === 'Неправильные почта или пароль') {
         next(new NotAuthorizedError('Неправильные почта или пароль'));
       } else {
-        next(new UnknownError('Неизвестная ошибка'));
+        next(new UnknownError());
       }
     });
 };
@@ -69,7 +70,7 @@ module.exports.createUser = (req, res, next) => {
         } else if (err.name === 'ValidationError') {
           next(new InvalidDataError('Переданы некорректные данные при создании пользователя'));
         } else {
-          next(new UnknownError('Неизвестная ошибка'));
+          next(new UnknownError());
         }
       }));
 };
@@ -77,7 +78,7 @@ module.exports.createUser = (req, res, next) => {
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => next(new UnknownError('Неизвестная ошибка')));
+    .catch(() => next(new UnknownError()));
 };
 
 module.exports.getUserById = (req, res, next) => {
@@ -90,7 +91,7 @@ module.exports.getUserById = (req, res, next) => {
       } else if (err.name === 'CastError') {
         next(new InvalidDataError('Некорректный идентификатор пользователя'));
       } else {
-        next(new UnknownError('Неизвестная ошибка'));
+        next(new UnknownError());
       }
     });
 };
@@ -118,7 +119,7 @@ module.exports.updateProfile = (req, res, next) => {
       } else if (err.name === 'CastError') {
         next(new InvalidDataError('Некорректный идентификатор пользователя'));
       } else {
-        next(new UnknownError('Неизвестная ошибка'));
+        next(new UnknownError());
       }
     });
 };
@@ -141,7 +142,7 @@ module.exports.updateAvatar = (req, res, next) => {
       } else if (err.name === 'ValidationError') {
         next(new InvalidDataError('Переданы некорректные данные при обновлении аватара.'));
       } else {
-        next(new UnknownError('Неизвестная ошибка'));
+        next(new UnknownError());
       }
     });
 };

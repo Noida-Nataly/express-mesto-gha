@@ -1,6 +1,6 @@
 class UnknownError extends Error {
-  constructor(message) {
-    super(message);
+  constructor() {
+    super('На сервере произошла ошибка');
     this.statusCode = 500;
   }
 }
