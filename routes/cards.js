@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const regex = /^(https?:\/\/)?[^\s]*/;
+const regex = /^(https?:\/\/)+[^\s]*/;
 
 const { celebrate, Joi } = require('celebrate');
 const {
@@ -25,7 +25,7 @@ router.post(
 router.delete(
   '/:id',
   celebrate({
-    body: Joi.object().keys({
+    params: Joi.object().keys({
       id: Joi.string().length(24).required(),
     }),
   }),
@@ -34,7 +34,7 @@ router.delete(
 router.put(
   '/:cardId/likes',
   celebrate({
-    body: Joi.object().keys({
+    params: Joi.object().keys({
       cardId: Joi.string().length(24).required(),
     }),
   }),
@@ -43,7 +43,7 @@ router.put(
 router.delete(
   '/:cardId/likes',
   celebrate({
-    body: Joi.object().keys({
+    params: Joi.object().keys({
       cardId: Joi.string().length(24).required(),
     }),
   }),

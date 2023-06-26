@@ -29,11 +29,11 @@ module.exports.login = (req, res, next) => {
             '4PgzIvqPt4i08qhHTg8MZCWruulpojs6',
             { expiresIn: '7d' },
           );
-          return res.cookie('token', token, {
+          res.cookie('token', token, {
             maxAge: 3600000 * 24 * 7,
             httpOnly: true,
-          })
-            .end();
+          });
+          return res.send({ message: 'Авторизация прошла успешно' });
         });
     })
     .catch((err) => {

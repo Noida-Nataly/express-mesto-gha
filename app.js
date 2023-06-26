@@ -13,7 +13,7 @@ const errorsMiddleware = require('./middlewares/errors');
 const userController = require('./controllers/users');
 const NotFoundError = require('./errors/not-found-err');
 
-const regex = /^(https?:\/\/)?[^\s]*/;
+const regex = /^(https?:\/\/)+[^\s]*/;
 
 const { PORT = 3000 } = process.env;
 const app = express();
